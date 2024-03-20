@@ -1,14 +1,34 @@
-# Component definition file Template Repository
+# McCode File component
+A component to write a file based on the contents of a `METADATA` entry.
 
-The `McStas`/`McXtrace` code generator [`mccode-antlr`](https://github.com/McStasMcXtrace/mccode-antlr.git) can use [`pooch`](https://github.com/fantiando/pooch.git) to fetch component definition files from GitHub repositories which containan appropriate `pooch` registry file.
-The registry file is a listing of (component) filename and file hash pairs, and should be updated whenever a file changes.
-Rather than calculating and updating the hashes in the registry by hand, this template includes a GitHub Actions workflow to keep the file up to date for you.
+## Usage
 
-You may need to modify either the Python script which produces the file,
-located at `.github/register.py`,
-or the workflow, `.github/workflows/register.yml`,
-to produce the registry file for your use case.
+```c
+COMPONENT file_instance_name = File(filename="off_file.off", metadatakey="file_instance_name:metadata_entry_name") AT (0, 0, 0)
+METADATA metadata_entry_name "mimetype/text" %{OFF
+8 6
+0.0 0.0 0.0
+0.0 1.0 0.0
+0.0 1.0 1.0
+0.0 0.0 1.0
+1.0 0.0 0.0
+1.0 1.0 0.0
+1.0 1.0 1.0
+1.0 0.0 1.0
+4 0 3 2 1
+4 4 5 6 7
+4 0 1 6 5
+4 3 6 7 2
+4 3 0 4 7
+4 1 2 5 6
+%}
+```
 
-## Workflow permissions
-You may need to modify the permissions granted to workflow files in your cloned repository.
-Under `Workflow permissions` at [settings/actions](../../settings/actions) ensure that `Read and write permissions` is selected.
+or 
+
+```c
+COMPONENT some_arm = Arm() AT (x, y, z) ...
+METADATA some_name "mimetype/JSON" %{{"some_value": 14, "has_name": false}%}
+
+COMPONENT file_instance = File(metadatakey="some_arm:some_name") AT (0, 0, 0);
+```
