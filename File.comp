@@ -1,6 +1,6 @@
 DEFINE COMPONENT File
 SETTING PARAMETERS (string filename=0, string metadatakey=0, int keep=0)
-OUTPUT PARAMTERS ()
+OUTPUT PARAMETERS ()
 SHARE
 %{
 %}
@@ -13,8 +13,8 @@ INITIALIZE
 %{
 // Sort-out the key that we are searching for
 if (metadatakey == NULL || metadatakey[0] == '\0'){
-  key = malloc((strlen(NAMECURRENTCOMP) + 1) * sizeof(char));
-  strcpy(key, NAMECURRENTCOMP);
+  key = malloc((strlen(NAME_CURRENT_COMP) + 1) * sizeof(char));
+  strcpy(key, NAME_CURRENT_COMP);
 } else {
   key = malloc((strlen(metadatakey) + 1) * sizeof(char));
   strcpy(key, metadatakey);
@@ -22,30 +22,31 @@ if (metadatakey == NULL || metadatakey[0] == '\0'){
 int matches = metadata_table_defined(num_metadata, metadata_table, key);
 if (matches != 1) {
   // 0 would mean _no_ matches; maybe they metadata name without the component was given?
-  if (matches == 0 && strcmp(key, NAMECURRENTCOMP) {
+  if (matches == 0 && strcmp(key, NAME_CURRENT_COMP)) {
     free(key);
-    key = malloc((strlen(NAMECURRENTCOMP) + strlen(metadatakey) + 2) * sizeof(char));
-    sprintf(key, "%s:%s", NAMECURRENTCOMP, metadatakey);
-    matches = metadata_table_defined(num_metadta, metadata_table, key);
+    key = malloc((strlen(NAME_CURRENT_COMP) + strlen(metadatakey) + 2) * sizeof(char));
+    sprintf(key, "%s:%s", NAME_CURRENT_COMP, metadatakey);
+    matches = metadata_table_defined(num_metadata, metadata_table, key);
   }
   // there's a bug in metadata_table_defined that returns num_metadata if key == NULL
   // But since key _isn't_ null, any other result _should_ mean key == A_COMPONENT_NAME
   // _and_ that component defines _multiple_ METADATA entries.
   else {
-    printf("%s: There are %d METADATA entries that match %s; please select only one of:\n", NAMECURRENTCOMP, matches, key);
+    printf("%s: There are %d METADATA entries that match %s; please select only one of:\n", NAME_CURRENT_COMP, matches, key);
     metadata_table_print_component_keys(num_metadata, metadata_table, key);
     exit(1);
   }
 }
 if (metadata_table_defined(num_metadata, metadata_table, key) != 1) {
-  perror("%s: No unique metadata defined with key %s\n", NAMECURRENTCOMP, key);
+  fprintf(stderr, "%s: No unique metadata defined with key %s\n", NAME_CURRENT_COMP, key);
   exit(1);
 }
   
 char * name_part = metadata_table_key_literal(key);
 if (name_part == NULL) {
   // TODO Update the key to use the (unique) name ...
-
+  printf("Can not update the key automatically, please fix %s\n", NAME_CURRENT_COMP);
+  exit(1);
 }
 
 if (filename == NULL || filename[0] == '\0'){
@@ -73,7 +74,7 @@ FINALLY
 %{
 // (Optionally) Remove the file now that the runtime is done
 if (!keep && !remove(name)) {
-  perror("%s: Could not remove file %s\n", NAMECURRENTCOMP, name);
+  fprintf(stderr, "%s: Could not remove file %s\n", NAME_CURRENT_COMP, name);
 }
 if (key) free(key);
 if (name) free(name);
