@@ -5,7 +5,8 @@ A component to write a file based on the contents of a `METADATA` entry.
 
 ```c
 COMPONENT file_instance_name = File(filename="off_file.off", metadatakey="file_instance_name:metadata_entry_name") AT (0, 0, 0)
-METADATA metadata_entry_name "mimetype/text" %{OFF
+METADATA "mimetype/text" metadata_entry_name %{
+OFF
 8 6
 0.0 0.0 0.0
 0.0 1.0 0.0
@@ -28,7 +29,9 @@ or
 
 ```c
 COMPONENT some_arm = Arm() AT (x, y, z) ...
-METADATA some_name "mimetype/JSON" %{{"some_value": 14, "has_name": false}%}
+METADATA "mimetype/JSON" some_name %{
+{"some_value": 14, "has_name": false}
+%}
 
 COMPONENT file_instance = File(metadatakey="some_arm:some_name") AT (0, 0, 0);
 ```
