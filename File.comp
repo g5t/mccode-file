@@ -44,9 +44,19 @@ if (metadata_table_defined(num_metadata, metadata_table, key) != 1) {
   
 char * name_part = metadata_table_key_literal(key);
 if (name_part == NULL) {
-  // TODO Update the key to use the (unique) name ...
-  printf("Can not update the key automatically, please fix %s\n", NAME_CURRENT_COMP);
+#if defined(__MCCODE_VERSION__) && __MCCODE_VERSION__ >= 305000L
+  // We already restrict that only one key matches.
+  name_part = metadata_table_name(num_metadata, metadata_table, key);
+  // is key NAME_CURRENT_COMP or something provided by the user? We don't know
+  // so we _must_ cycle the key allocation to make this work.
+  char * new_key = malloc((strlen(key) + strlen(name_part) + 2) * sizeof(char));
+  sprintf(new_key, "%s:%s", key, name_part);
+  free(key);
+  key = new_key;
+#else
+  printf("Can not update the key automatically prior to McCode v3.5.0, please fix %s usage or upgrade\n", NAME_CURRENT_COMP);
   exit(1);
+#endif
 }
 
 if (filename == NULL || filename[0] == '\0'){
